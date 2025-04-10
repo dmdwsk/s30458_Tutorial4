@@ -48,13 +48,13 @@ public class EmpDeptSalgradeTests
     {
         var emps = Database.GetEmps();
 
-        //var result = null; 
+        var result = (from e in emps select new {e.EName,e.Sal}).ToList(); 
         
-        // Assert.All(result, r =>
-        // {
-        //     Assert.False(string.IsNullOrWhiteSpace(r.EName));
-        //     Assert.True(r.Sal > 0);
-        // });
+         Assert.All(result, r =>
+         {
+             Assert.False(string.IsNullOrWhiteSpace(r.EName));
+             Assert.True(r.Sal > 0);
+         });
     }
 
     // 5. JOIN Emp to Dept
@@ -65,9 +65,9 @@ public class EmpDeptSalgradeTests
         var emps = Database.GetEmps();
         var depts = Database.GetDepts();
 
-        //var result = null; 
+        var result = (from e in emps join d in depts on e.DeptNo equals d.DeptNo select new { e.EName, d.DName }).ToList(); 
 
-        //Assert.Contains(result, r => r.DName == "SALES" && r.EName == "ALLEN");
+        Assert.Contains(result, r => r.DName == "SALES" && r.EName == "ALLEN");
     }
 
     // 6. Group by DeptNo
@@ -77,9 +77,16 @@ public class EmpDeptSalgradeTests
     {
         var emps = Database.GetEmps();
 
-        // var result = null; 
-        //
-        // Assert.Contains(result, g => g.DeptNo == 30 && g.Count == 2);
+        var result = (from e in emps
+            group e by e.DeptNo
+            into g
+            select new
+            {
+                DeptNo = g.Key,
+                Count = g.Count()
+            }).ToList();
+        
+        Assert.Contains(result, g => g.DeptNo == 30 && g.Count == 2);
     }
 
     // 7. SelectMany (simulate flattening)
@@ -89,9 +96,9 @@ public class EmpDeptSalgradeTests
     {
         var emps = Database.GetEmps();
 
-        // var result = null; 
-        //
-        // Assert.All(result, r => Assert.NotNull(r.Comm));
+        var result = (from e in emps where e.Comm != null select new {e.EName, e.Comm}).ToList(); 
+        
+        Assert.All(result, r => Assert.NotNull(r.Comm));
     }
 
     // 8. Join with Salgrade
@@ -102,9 +109,9 @@ public class EmpDeptSalgradeTests
         var emps = Database.GetEmps();
         var grades = Database.GetSalgrades();
 
-        // var result = null;
-        //
-        // Assert.Contains(result, r => r.EName == "ALLEN" && r.Grade == 3);
+        var result = null;
+        
+        Assert.Contains(result, r => r.EName == "ALLEN" && r.Grade == 3);
     }
 
     // 9. Aggregation (AVG)
